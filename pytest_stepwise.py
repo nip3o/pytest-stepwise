@@ -7,6 +7,7 @@ __version__ = '0.1'
 
 def pytest_addoption(parser):
     group = parser.getgroup('general')
+    group.addoption('--sw', action='store_true', dest='stepwise')
     group.addoption('--stepwise', action='store_true', dest='stepwise',
                     help='exit on test fail and continue from last failing test next time')
 

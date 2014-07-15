@@ -56,3 +56,5 @@ class StepwisePlugin:
     def pytest_sessionfinish(self, session):
         if self.active:
             self.config.cache.set('cache/stepwise', self.lastfailed)
+        else:
+            self.config.cache.set('cache/stepwise', set())

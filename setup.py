@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name='pytest-stepwise',
-    version='0.1',
+    version='0.2',
     author='Niclas Olofsson',
     author_email='n@niclasolofsson.se',
     maintainer='Niclas Olofsson',

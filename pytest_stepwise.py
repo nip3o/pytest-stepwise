@@ -33,6 +33,7 @@ class StepwisePlugin:
         if not self.active or not self.lastfailed:
             return
 
+        # Make a list of all tests that has been runned before the last failing one.
         already_passed = []
         for item in items:
             if item.nodeid in self.lastfailed:
@@ -46,21 +47,26 @@ class StepwisePlugin:
         config.hook.pytest_deselected(items=already_passed)
 
     def pytest_runtest_logreport(self, report):
-        if not self.active or 'xfail' in report.keywords:
+        # Skip this hook if plugin is not active, the test has not run yet, or the test is xfailed.
+        if not self.active or report.when != 'call' or 'xfail' in report.keywords:
             return
 
-        if report.failed and not self.skip:
-            self.lastfailed.add(report.nodeid)
-            raise Session.Interrupted('Test failed, continuing from this test next run.')
-
-        elif report.when == 'call':
+        if report.failed:
             if self.skip:
+                # Remove test from the skipped ones and unset the skip option
+                # to make sure the following tests will not be skipped.
+                self.lastfailed.discard(report.nodeid)
                 self.skip = False
-
+            else:
+                # Mark test as the last failing and interrupt the test session.
+                self.lastfailed.add(report.nodeid)
+                raise Session.Interrupted('Test failed, continuing from this test next run.')
+        else:
             self.lastfailed.discard(report.nodeid)
 
     def pytest_sessionfinish(self, session):
         if self.active:
             self.config.cache.set('cache/stepwise', self.lastfailed)
         else:
+            # Clear the list of failing tests if the plugin is not active.
             self.config.cache.set('cache/stepwise', set())

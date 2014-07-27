@@ -20,6 +20,10 @@ How to use it?
 3. Run ``py.test --stepwise`` again. The test suite will continue to run
    right from where it was.
 
+Use the ``--skip`` option to ignore one failing test and stop the
+test execution on the second failing test instead. This is useful if you
+get stuck on a failing test and just want to ignore it until later.
+
 
 When is this useful?
 ====================
@@ -31,8 +35,8 @@ tests. It should however be noted that all tests need to be re-run after
 to make sure that any changes made when fixing one test has not broken
 some other test.\\
 
-Please send me a tweet if you have any suggestions regarding the
-usefulness of pytest-stepwise.\\
+Please submit an issue if you have any suggestions regarding use cases
+of pytest-stepwise.\\
 
 
 Changelog

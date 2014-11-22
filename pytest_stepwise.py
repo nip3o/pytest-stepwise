@@ -54,7 +54,7 @@ class StepwisePlugin:
 
         if report.failed:
             if self.skip:
-                # Remove test from the skipped ones and unset the skip option
+                # Remove test from the failed ones (if it exists) and unset the skip option
                 # to make sure the following tests will not be skipped.
                 self.lastfailed.discard(report.nodeid)
                 self.skip = False

@@ -8,10 +8,11 @@ __version__ = '0.2'
 def pytest_addoption(parser):
     group = parser.getgroup('general')
     group.addoption('--sw', action='store_true', dest='stepwise',
-                    help='ignore')
+                    help='alias for --stepwise')
     group.addoption('--stepwise', action='store_true', dest='stepwise',
                     help='exit on test fail and continue from last failing test next time')
-    group.addoption('--skip', action='store_true', dest='skip')
+    group.addoption('--skip', action='store_true', dest='skip',
+                    help='ignore the first failing test but stop on the next failing test')
 
 
 @pytest.mark.tryfirst

@@ -51,7 +51,7 @@ def test_fail_and_continue_with_stepwise(stepwise_testdir):
     # Make sure we stop after first failing test.
     assert 'test_success_before_fail PASSED' in stdout
     assert 'test_fail_on_flag FAILED' in stdout
-    assert not 'test_success_after_fail' in stdout
+    assert 'test_success_after_fail' not in stdout
 
     # "Fix" the test that failed in the last run and run it again.
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise')
@@ -59,7 +59,7 @@ def test_fail_and_continue_with_stepwise(stepwise_testdir):
 
     stdout = result.stdout.str()
     # Make sure the latest failing test runs and then continues.
-    assert not 'test_success_before_fail' in stdout
+    assert 'test_success_before_fail' not in stdout
     assert 'test_fail_on_flag PASSED' in stdout
     assert 'test_success_after_fail PASSED' in stdout
 
@@ -74,4 +74,4 @@ def test_run_with_skip_option(stepwise_testdir):
     assert 'test_fail_on_flag FAILED' in stdout
     assert 'test_success_after_fail PASSED' in stdout
     assert 'test_fail_last_on_flag FAILED' in stdout
-    assert not 'test_success_after_last_fail' in stdout
+    assert 'test_success_after_last_fail' not in stdout

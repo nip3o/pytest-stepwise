@@ -34,13 +34,21 @@ class StepwisePlugin:
         if not self.active or not self.lastfailed:
             return
 
-        # Make a list of all tests that has been runned before the last failing one.
         already_passed = []
+        found = False
+
+        # Make a list of all tests that has been runned before the last failing one.
         for item in items:
             if item.nodeid in self.lastfailed:
+                found = True
                 break
             else:
                 already_passed.append(item)
+
+        # If the previously failed test was not found among the test items,
+        # do not skip any tests.
+        if not found:
+            already_passed = []
 
         for item in already_passed:
             items.remove(item)

@@ -30,6 +30,11 @@ def test_success_after_last_fail():
     assert 1
 ''')
 
+    testdir.makepyfile(testfile_b='''
+def test_success():
+    assert 1
+''')
+
     return testdir
 
 
@@ -98,3 +103,21 @@ def test_fail_on_errors(error_testdir):
 
     assert 'test_error ERROR' in stdout
     assert 'test_success_after_fail' not in stdout
+
+
+def test_change_testfile(stepwise_testdir):
+    result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise', '--fail',
+                                        'test_stepwise.py')
+    assert not result.errlines
+
+    stdout = result.stdout.str()
+    assert 'test_fail_on_flag FAILED' in stdout
+
+    # Make sure the second test run starts from the beginning, since the
+    # test to continue from does not exist in testfile_b.
+    result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise',
+                                        'testfile_b.py')
+    assert not result.errlines
+
+    stdout = result.stdout.str()
+    assert 'test_success PASSED' in stdout

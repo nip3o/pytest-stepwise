@@ -33,6 +33,19 @@ def test_success_after_last_fail():
     return testdir
 
 
+@pytest.fixture
+def error_testdir(testdir):
+    testdir.makepyfile(test_stepwise='''
+def test_error(nonexisting_fixture):
+    assert 1
+
+def test_success_after_fail():
+    assert 1
+''')
+
+    return testdir
+
+
 def test_run_without_stepwise(stepwise_testdir):
     result = stepwise_testdir.runpytest('-v', '--strict', '--fail')
 
@@ -75,3 +88,13 @@ def test_run_with_skip_option(stepwise_testdir):
     assert 'test_success_after_fail PASSED' in stdout
     assert 'test_fail_last_on_flag FAILED' in stdout
     assert 'test_success_after_last_fail' not in stdout
+
+
+def test_fail_on_errors(error_testdir):
+    result = error_testdir.runpytest('-v', '--strict', '--stepwise')
+
+    assert not result.errlines
+    stdout = result.stdout.str()
+
+    assert 'test_error ERROR' in stdout
+    assert 'test_success_after_fail' not in stdout

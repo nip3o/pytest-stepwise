@@ -33,10 +33,10 @@ is failing. In this case, pytest-stepwise allows you to focus on fixing
 one test at the time instead of being overwhelmed by all failing
 tests. It should however be noted that all tests need to be re-run after
 to make sure that any changes made when fixing one test has not broken
-some other test.\\
+some other test.
 
 Please submit an issue if you have any suggestions regarding use cases
-of pytest-stepwise.\\
+of pytest-stepwise.
 
 
 Changelog

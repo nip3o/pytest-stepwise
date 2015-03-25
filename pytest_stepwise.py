@@ -1,6 +1,5 @@
 import pytest
 from pytest_cache import Cache
-from pytest import Session
 
 __version__ = '0.2'
 

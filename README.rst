@@ -45,3 +45,6 @@ Changelog
 * 0.1 - Initial version.
 * 0.2 - Clear cache after test run when the plugin is not active.
   Added  ``--skip`` option.
+* 0.3 - Fixed issue when failing tests are removed.
+  Fixed compatibility with ``--pdb`` option.
+  Stop on errors as well as on test failures.

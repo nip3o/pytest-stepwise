@@ -60,8 +60,8 @@ class StepwisePlugin:
         config.hook.pytest_deselected(items=already_passed)
 
     def pytest_runtest_logreport(self, report):
-        # Skip this hook if plugin is not active, the test has not run yet, or the test is xfailed.
-        if not self.active or report.when != 'call' or 'xfail' in report.keywords:
+        # Skip this hook if plugin is not active or the test is xfailed.
+        if not self.active or 'xfail' in report.keywords:
             return
 
         if report.failed:
@@ -76,7 +76,10 @@ class StepwisePlugin:
                 self.session.shouldstop = 'Test failed, continuing from this test next run.'
 
         else:
-            self.lastfailed.discard(report.nodeid)
+            # If the test was actually run and did pass.
+            if report.when == 'call':
+                # Remove test from the failed ones, if exists.
+                self.lastfailed.discard(report.nodeid)
 
     def pytest_sessionfinish(self, session):
         if self.active:

@@ -25,6 +25,7 @@ class StepwisePlugin:
     def __init__(self, config):
         self.config = config
         self.active = config.getvalue('stepwise')
+        self.session = None
 
         if self.active:
             self.lastfailed = config.cache.get('cache/stepwise', set())
@@ -34,6 +35,7 @@ class StepwisePlugin:
         if not self.active or not self.lastfailed:
             return
 
+        self.session = session
         already_passed = []
         found = False
 
@@ -69,7 +71,8 @@ class StepwisePlugin:
             else:
                 # Mark test as the last failing and interrupt the test session.
                 self.lastfailed.add(report.nodeid)
-                raise Session.Interrupted('Test failed, continuing from this test next run.')
+                self.session.shouldstop = 'Test failed, continuing from this test next run.'
+
         else:
             self.lastfailed.discard(report.nodeid)
 

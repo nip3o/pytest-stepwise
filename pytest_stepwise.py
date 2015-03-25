@@ -31,11 +31,13 @@ class StepwisePlugin:
             self.lastfailed = config.cache.get('cache/stepwise', set())
             self.skip = config.getvalue('skip')
 
+    def pytest_sessionstart(self, session):
+        self.session = session
+
     def pytest_collection_modifyitems(self, session, config, items):
         if not self.active or not self.lastfailed:
             return
 
-        self.session = session
         already_passed = []
         found = False
 

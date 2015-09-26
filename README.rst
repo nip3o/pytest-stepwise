@@ -55,4 +55,5 @@ Changelog
 * 0.3 - Fixed issue when failing tests are removed.
   Fixed compatibility with ``--pdb`` option.
   Stop on errors as well as on test failures.
-* 0.4 - Refactoring, pytest 2.8 compatiblity
+* 0.4 - Refactoring, pytest 2.8 compatiblity. Stop test execution on
+  collection errors.

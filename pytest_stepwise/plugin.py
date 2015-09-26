@@ -1,7 +1,5 @@
 import pytest
-from pytest_cache import Cache
-
-__version__ = '0.3'
+from .compat import Cache
 
 
 def pytest_addoption(parser):
@@ -14,7 +12,7 @@ def pytest_addoption(parser):
                     help='ignore the first failing test but stop on the next failing test')
 
 
-@pytest.mark.tryfirst
+@pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
     config.cache = Cache(config)
     config.pluginmanager.register(StepwisePlugin(config), 'stepwiseplugin')
@@ -57,6 +55,10 @@ class StepwisePlugin:
             items.remove(item)
 
         config.hook.pytest_deselected(items=already_passed)
+
+    def pytest_collectreport(self, report):
+        if self.active and report.failed:
+            self.session.shouldstop = 'Error when collecting test, stopping test execution.'
 
     def pytest_runtest_logreport(self, report):
         # Skip this hook if plugin is not active or the test is xfailed.

@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name='pytest-stepwise',
-    version='0.3',
+    version=__import__('pytest_stepwise').__version__,
     author='Niclas Olofsson',
     author_email='n@niclasolofsson.se',
     maintainer='Niclas Olofsson',
@@ -20,7 +20,7 @@ setup(
     url='https://github.com/nip3o/pytest-stepwise',
     description='Run a test suite one failing test at a time.',
     long_description=read('README.rst'),
-    py_modules=['pytest_stepwise'],
+    packages=['pytest_stepwise'],
     install_requires=['pytest-cache >= 1.0'],
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
@@ -28,5 +28,5 @@ setup(
                  'Programming Language :: Python',
                  'Operating System :: OS Independent',
                  'License :: OSI Approved :: MIT License'],
-    entry_points={'pytest11': ['stepwise = pytest_stepwise']},
+    entry_points={'pytest11': ['stepwise = pytest_stepwise.plugin']},
 )

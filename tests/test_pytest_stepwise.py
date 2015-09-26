@@ -51,6 +51,12 @@ def test_success_after_fail():
     return testdir
 
 
+@pytest.fixture
+def broken_testdir(testdir):
+    testdir.makepyfile(working_testfile='def test_proper(): assert 1', broken_testfile='foobar')
+    return testdir
+
+
 def test_run_without_stepwise(stepwise_testdir):
     result = stepwise_testdir.runpytest('-v', '--strict', '--fail')
 
@@ -121,3 +127,10 @@ def test_change_testfile(stepwise_testdir):
 
     stdout = result.stdout.str()
     assert 'test_success PASSED' in stdout
+
+
+def test_stop_on_collection_errors(broken_testdir):
+    result = broken_testdir.runpytest('-v', '--strict', '--stepwise', 'working_testfile.py', 'broken_testfile.py')
+
+    stdout = result.stdout.str()
+    assert 'Error when collecting test' in stdout

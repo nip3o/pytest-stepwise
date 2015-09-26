@@ -1,7 +1,4 @@
-import pytest
-from pytest_cache import Cache
-
-__version__ = '0.3'
+from .compat import Cache, tryfirst
 
 
 def pytest_addoption(parser):
@@ -14,7 +11,7 @@ def pytest_addoption(parser):
                     help='ignore the first failing test but stop on the next failing test')
 
 
-@pytest.mark.tryfirst
+@tryfirst
 def pytest_configure(config):
     config.cache = Cache(config)
     config.pluginmanager.register(StepwisePlugin(config), 'stepwiseplugin')
@@ -27,7 +24,7 @@ class StepwisePlugin:
         self.session = None
 
         if self.active:
-            self.lastfailed = config.cache.get('cache/stepwise', set())
+            self.lastfailed = config.cache.get('cache/stepwise', None)
             self.skip = config.getvalue('skip')
 
     def pytest_sessionstart(self, session):
@@ -42,7 +39,7 @@ class StepwisePlugin:
 
         # Make a list of all tests that has been runned before the last failing one.
         for item in items:
-            if item.nodeid in self.lastfailed:
+            if item.nodeid == self.lastfailed:
                 found = True
                 break
             else:
@@ -58,6 +55,10 @@ class StepwisePlugin:
 
         config.hook.pytest_deselected(items=already_passed)
 
+    def pytest_collectreport(self, report):
+        if self.active and report.failed:
+            self.session.shouldstop = 'Error when collecting test, stopping test execution.'
+
     def pytest_runtest_logreport(self, report):
         # Skip this hook if plugin is not active or the test is xfailed.
         if not self.active or 'xfail' in report.keywords:
@@ -67,22 +68,25 @@ class StepwisePlugin:
             if self.skip:
                 # Remove test from the failed ones (if it exists) and unset the skip option
                 # to make sure the following tests will not be skipped.
-                self.lastfailed.discard(report.nodeid)
+                if report.nodeid == self.lastfailed:
+                    self.lastfailed = None
+
                 self.skip = False
             else:
                 # Mark test as the last failing and interrupt the test session.
-                self.lastfailed.add(report.nodeid)
+                self.lastfailed = report.nodeid
                 self.session.shouldstop = 'Test failed, continuing from this test next run.'
 
         else:
             # If the test was actually run and did pass.
             if report.when == 'call':
                 # Remove test from the failed ones, if exists.
-                self.lastfailed.discard(report.nodeid)
+                if report.nodeid == self.lastfailed:
+                    self.lastfailed = None
 
     def pytest_sessionfinish(self, session):
         if self.active:
             self.config.cache.set('cache/stepwise', self.lastfailed)
         else:
             # Clear the list of failing tests if the plugin is not active.
-            self.config.cache.set('cache/stepwise', set())
+            self.config.cache.set('cache/stepwise', [])

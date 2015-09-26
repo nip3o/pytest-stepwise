@@ -51,10 +51,15 @@ def test_success_after_fail():
     return testdir
 
 
+@pytest.fixture
+def broken_testdir(testdir):
+    testdir.makepyfile(working_testfile='def test_proper(): assert 1', broken_testfile='foobar')
+    return testdir
+
+
 def test_run_without_stepwise(stepwise_testdir):
     result = stepwise_testdir.runpytest('-v', '--strict', '--fail')
 
-    assert not result.errlines
     result.stdout.fnmatch_lines(['*test_success_before_fail PASSED*'])
     result.stdout.fnmatch_lines(['*test_fail_on_flag FAILED*'])
     result.stdout.fnmatch_lines(['*test_success_after_fail PASSED*'])
@@ -63,7 +68,7 @@ def test_run_without_stepwise(stepwise_testdir):
 def test_fail_and_continue_with_stepwise(stepwise_testdir):
     # Run the tests with a failing second test.
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise', '--fail')
-    assert not result.errlines
+    assert not result.stderr.str()
 
     stdout = result.stdout.str()
     # Make sure we stop after first failing test.
@@ -73,7 +78,7 @@ def test_fail_and_continue_with_stepwise(stepwise_testdir):
 
     # "Fix" the test that failed in the last run and run it again.
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise')
-    assert not result.errlines
+    assert not result.stderr.str()
 
     stdout = result.stdout.str()
     # Make sure the latest failing test runs and then continues.
@@ -85,7 +90,7 @@ def test_fail_and_continue_with_stepwise(stepwise_testdir):
 def test_run_with_skip_option(stepwise_testdir):
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise', '--skip',
                                         '--fail', '--fail-last')
-    assert not result.errlines
+    assert not result.stderr.str()
 
     stdout = result.stdout.str()
     # Make sure first fail is ignore and second fail stops the test run.
@@ -98,7 +103,7 @@ def test_run_with_skip_option(stepwise_testdir):
 def test_fail_on_errors(error_testdir):
     result = error_testdir.runpytest('-v', '--strict', '--stepwise')
 
-    assert not result.errlines
+    assert not result.stderr.str()
     stdout = result.stdout.str()
 
     assert 'test_error ERROR' in stdout
@@ -108,7 +113,7 @@ def test_fail_on_errors(error_testdir):
 def test_change_testfile(stepwise_testdir):
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise', '--fail',
                                         'test_stepwise.py')
-    assert not result.errlines
+    assert not result.stderr.str()
 
     stdout = result.stdout.str()
     assert 'test_fail_on_flag FAILED' in stdout
@@ -117,7 +122,14 @@ def test_change_testfile(stepwise_testdir):
     # test to continue from does not exist in testfile_b.
     result = stepwise_testdir.runpytest('-v', '--strict', '--stepwise',
                                         'testfile_b.py')
-    assert not result.errlines
+    assert not result.stderr.str()
 
     stdout = result.stdout.str()
     assert 'test_success PASSED' in stdout
+
+
+def test_stop_on_collection_errors(broken_testdir):
+    result = broken_testdir.runpytest('-v', '--strict', '--stepwise', 'working_testfile.py', 'broken_testfile.py')
+
+    stdout = result.stdout.str()
+    assert 'Error when collecting test' in stdout

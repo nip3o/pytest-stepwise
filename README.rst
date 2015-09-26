@@ -39,6 +39,13 @@ Please submit an issue if you have any suggestions regarding use cases
 of pytest-stepwise.
 
 
+Compatibility
+=============
+
+pytest-stepwise is compatible with pytest 2.2 -> 2.8.
+For pytest 2.7 and earlier, ``pytest-cache`` is required as a dependency.
+
+
 Changelog
 =========
 
@@ -48,3 +55,4 @@ Changelog
 * 0.3 - Fixed issue when failing tests are removed.
   Fixed compatibility with ``--pdb`` option.
   Stop on errors as well as on test failures.
+* 0.4 - Refactoring, pytest 2.8 compatiblity

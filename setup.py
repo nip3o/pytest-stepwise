@@ -21,7 +21,7 @@ setup(
     description='Run a test suite one failing test at a time.',
     long_description=read('README.rst'),
     packages=['pytest_stepwise'],
-    install_requires=['pytest-cache >= 1.0'],
+    install_requires=['pytest >= 2.2'],
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
                  'Topic :: Software Development :: Testing',

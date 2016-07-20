@@ -9,10 +9,6 @@ option from pytest-cache (which only runs failing tests), except that
 it does not restart the test run from the beginning as soon as a test
 passes.
 
-pytest-stepwise depends on pytest-cache, which will be installed as a
-dependency.
-
-
 How to use it?
 ==============
 

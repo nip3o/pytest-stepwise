@@ -4,8 +4,10 @@ Introduction
 pytest-stepwise is a plugin for `pytest <http://pytest.org/>`_ that run
 all tests until a test fails, and then continue next test run from where
 the last run failed. You may think of it as a combination of the  ``-x``
-option, which exits the test run after a failing test, and the ``--lf``
-option from pytest-cache, which only runs failing tests.
+option (which exits the test run after a failing test) and the ``--lf``
+option from pytest-cache (which only runs failing tests), except that
+it does not restart the test run from the beginning as soon as a test
+passes.
 
 pytest-stepwise depends on pytest-cache, which will be installed as a
 dependency.

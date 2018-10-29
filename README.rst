@@ -1,3 +1,11 @@
+Important: Future of pytest-stepwise
+====================================
+
+The functionality of pytest-stepwise is in its way into a future pytest release, so that you get the exact same functionality without having to use a plugin for it (yay!). To avoid of compability issues with that version, no more releases of this plugin will be released. If you need pytest 3.7 support until then you can use the unreleased version in master and just remove the plugin when you upgrade to a version of pytest that has stepwise built-in. Happy test-running!
+
+https://github.com/pytest-dev/pytest/pull/4147
+
+
 Introduction
 ============
 
